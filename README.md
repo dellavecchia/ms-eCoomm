@@ -1,5 +1,5 @@
 # Product-Micro-services-Project
-*This is a project of a simple microservices system, with 2 services (Product-ms and Warehouse-ms), CRUD and business rules.*
+*This is a project of a simple microservices system, with 2 services (Product-ms and Warehouse-ms), CRUD, business rules and some unit tests for the Repository and the Services.*
 
 
 # Product-ms
