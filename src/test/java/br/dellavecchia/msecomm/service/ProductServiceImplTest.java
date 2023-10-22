@@ -4,7 +4,6 @@ package br.dellavecchia.msecomm.service;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import br.dellavecchia.msecomm.dto.ProductDTO;
-import br.dellavecchia.msecomm.model.Product;
 import br.dellavecchia.msecomm.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +42,6 @@ public class ProductServiceImplTest {
 //        startProduct();
         FixtureFactoryLoader.loadTemplates("br.dellavecchia.msecomm.fixture");
 
-
-
     }
 
 
@@ -73,17 +69,23 @@ public class ProductServiceImplTest {
         Optional<ProductDTO> response2 = service.create(request2);
 
         //findAll on the repo
-        List<Product> products = repository.findAll();
-        List<ProductDTO> responses = new ArrayList<>();
-        products.forEach(product -> {
-            ProductDTO response = mapper.map(product, ProductDTO.class);
-            responses.add(response);
-        });
+//        List<Product> products = repository.findAll();
+//        List<ProductDTO> responses = new ArrayList<>();
+//        products.forEach(product -> {
+//            ProductDTO response = mapper.map(product, ProductDTO.class);
+//            responses.add(response);
+//        });
         List<ProductDTO> responseList = service.getAll();
 
-        // Assertions
-        assertEquals(responseList, responses);
 
+        // Assertions
+        assertNotNull(responseList);
+        assertEquals(responseList.get(0).getName(), response1.get().getName());
+        assertEquals(responseList.get(0).getDescription(), response1.get().getDescription());
+        assertEquals(responseList.get(0).getPrice(), response1.get().getPrice());
+        assertEquals(responseList.get(1).getName(), response2.get().getName());
+        assertEquals(responseList.get(1).getDescription(), response2.get().getDescription());
+        assertEquals(responseList.get(1).getPrice(), response2.get().getPrice());
 
     }
 
@@ -92,18 +94,16 @@ public class ProductServiceImplTest {
         ProductDTO request1 = Fixture.from(ProductDTO.class).gimme("valid_1");
         //Create a product and save on the repository
         Optional<ProductDTO> response1 = service.create(request1);
-//        Product product1 = mapper.map(response1, Product.class);
-//        repository.save(product1);
-//        //Find by id on the repo
-//        Optional<Product> product = repository.findById(product1.getId());
-//        //Mapping as DTO
-//       Optional<ProductDTO> productResponse = Optional.of(mapper.map(product.get(), ProductDTO.class));
 
-       //Using the getById method
 
         Optional<ProductDTO> productById = service.getById(response1.get().getId());
-
+        // Assertions
+        assertNotNull(productById);
         assertEquals(response1, productById);
+        assertEquals(productById.get().getName(), response1.get().getName());
+        assertEquals(productById.get().getDescription(), response1.get().getDescription());
+        assertEquals(productById.get().getPrice(), response1.get().getPrice());
+        assertTrue(productById.get().isAvailable());
 
 
     }
@@ -111,12 +111,13 @@ public class ProductServiceImplTest {
     @Test
     void shouldUpdate() {
         ProductDTO request2 = Fixture.from(ProductDTO.class).gimme("valid_2");
+        Optional<ProductDTO> response2 = service.create(request2);
        //update request
         ProductDTO requestUpdated = new ProductDTO();
         requestUpdated.setDescription("The new playstation available the best in the world super happy with it");
         requestUpdated.setPrice(4999.97);
         //Creating product method
-        Optional<ProductDTO> response2 = service.create(request2);
+
         //calling the update method
         Optional<ProductDTO> productUpdated = service.update(response2.get().getId(), requestUpdated);
 
